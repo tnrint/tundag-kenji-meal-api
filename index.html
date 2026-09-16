@@ -2,37 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student List</title>
+    <title>Food Menu</title>
 </head>
 
 <body>
 
-    <h1>Students</h1>
+    <h1>Food Menu</h1>
 
-    <button onclick="loadStudents()">Load Students</button>
+    <button onclick="loadFoods()">Load Menu</button>
 
-    <ul id="studentList"></ul>
+    <hr>
+
+    <h2>Search Food by ID</h2>
+    <input type="number" id="searchId" placeholder="Enter food ID">
+    <button onclick="searchFood()">Search</button>
+    <p id="searchResult"></p>
+
+    <ul id="foodList"></ul>
 
     <script>
-        async function loadStudents(){
+        async function loadFoods(){
 
-            const response = await fetch("api/students");
-            const students = await response.json();
-            const list = document.getElementById("studentList");
+            const response = await fetch("api/foods");
+            const foods = await response.json();
+            const list = document.getElementById("foodList");
 
             list.innerHTML = "";
 
-            students.forEach(student=>{
+            foods.forEach(food=>{
                 const item = document.createElement("li");
 
-                item.textContent = 
-                    student.name + " - " + student.course;
-                    
+                item.textContent =
+                    food.name + " - " + food.category + " - ₱" + food.price;
+
                     list.appendChild(item);
 
             });
         }
 
+        async function searchFood(){
+
+            const id = document.getElementById("searchId").value;
+            const result = document.getElementById("searchResult");
+
+            if(!id){
+                result.textContent = "Please enter an ID.";
+                return;
+            }
+
+            const response = await fetch("api/foods/" + id);
+
+            if(response.status === 404){
+                result.textContent = "Food not found.";
+                return;
+            }
+
+            const food = await response.json();
+
+            result.textContent =
+                "ID " + food.id + ": " + food.name + " - " + food.category + " - ₱" + food.price;
+        }
 
     </script>
 
